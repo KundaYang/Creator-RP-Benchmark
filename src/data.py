@@ -19,10 +19,26 @@ class Character(DataClassJsonMixin):
 
 
 @dataclass
+class Creator(DataClassJsonMixin):
+    char_name: str
+    char_summary: str
+    persona_background: list
+    content_policy: list
+
+
+@dataclass
 class Situation(DataClassJsonMixin):
     text: str
     tags: Optional[List[str]] = None
     num_turns: int = 4
+
+
+@dataclass
+class DMSituation(DataClassJsonMixin):
+    fan_note: dict
+    text: str
+    trigger_message: str
+    num_turns: int
 
 
 @dataclass
@@ -35,6 +51,17 @@ class Settings(DataClassJsonMixin):
     judge_user_prompt_path: str
     judge_system_prompt_path: str
     character_prompt_path: str
+
+
+@dataclass
+class CRMSettings(DataClassJsonMixin):
+    characters: List[Creator]
+    situations: List[DMSituation]
+    version: int
+    character_system_prompt_path: str
+    interrogator_system_prompt_path: str
+    judge_user_prompt_path: str
+    judge_system_prompt_path: str
 
 
 def compose_key(character: Character, situation: Situation) -> Tuple[str, str]:

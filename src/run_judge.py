@@ -29,6 +29,20 @@ class JudgeSingleOutput(DataClassJsonMixin):
     entertaining_explanation: str
     entertaining_score: int
 
+@dataclass
+class CRMJudgeSingleOutput(DataClassJsonMixin):
+    is_refusal_explanation: str
+    is_refusal: bool
+    overall_effectiveness_explanation: str
+    overall_effectiveness_score: int
+    persona_alignment_explanation: str
+    persona_alignment_score: int
+    content_policy_compliance_explanation: str
+    content_policy_compliance_score: int
+    language_and_tone_explanation: str
+    language_and_tone_score: int
+    fan_engagement_explanation: str
+    fan_engagement_score: int
 
 @dataclass
 class JudgeOutput(DataClassJsonMixin):
@@ -40,6 +54,22 @@ class JudgeOutput(DataClassJsonMixin):
             fixed_scores["in_character"].append(s.in_character_score)
             fixed_scores["entertaining"].append(s.entertaining_score)
             fixed_scores["fluency"].append(s.fluency_score)
+            fixed_scores["is_refusal"].append(int(s.is_refusal))
+        return fixed_scores
+
+
+@dataclass
+class CRMJudgeOutput(DataClassJsonMixin):
+    scores: List[CRMJudgeSingleOutput]
+
+    def get_aggregated(self) -> Dict[str, List[int]]:
+        fixed_scores = defaultdict(list)
+        for s in self.scores:
+            fixed_scores["overall_effectiveness"].append(s.overall_effectiveness_score)
+            fixed_scores["persona_alignment"].append(s.persona_alignment_score)
+            fixed_scores["content_policy_compliance"].append(s.content_policy_compliance_score)
+            fixed_scores["language_and_tone"].append(s.language_and_tone_score)
+            fixed_scores["fan_engagement"].append(s.fan_engagement_score)
             fixed_scores["is_refusal"].append(int(s.is_refusal))
         return fixed_scores
 
@@ -77,6 +107,45 @@ def run_judge(
             print("=============")
             print()
             output = JudgeOutput.from_dict(parse_output(result))
+            break
+        except Exception:
+            traceback.print_exc()
+            time.sleep(10)
+            continue
+    assert output is not None
+    return output
+
+
+def run_judge_crm(
+    character: Character,
+    situation: Situation,
+    provider: LLMProvider,
+    system_prompt_path: str,
+    user_prompt_path: str,
+    messages: ChatMessages,
+    **kwargs: Any,
+) -> CRMJudgeOutput:
+    system_prompt = encode_prompt(system_prompt_path)
+    user_prompt = encode_prompt(
+        user_prompt_path,
+        character=character,
+        messages=messages,
+    )
+    prompt = [
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": user_prompt},
+    ]
+    output: Optional[CRMJudgeOutput] = None
+    for _ in range(3):
+        try:
+            print(prompt[0]["content"])
+            print(prompt[1]["content"])
+            result = generate(prompt, provider=provider, **kwargs)
+            print(result)
+            print()
+            print("=============")
+            print()
+            output = CRMJudgeOutput.from_dict(parse_output(result))
             break
         except Exception:
             traceback.print_exc()
