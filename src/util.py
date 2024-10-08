@@ -79,7 +79,7 @@ def save(
 
     agg_scores = dict()
     if scores:
-        agg_scores = {k: mean(v) for k, v in scores.items()}
+        agg_scores = {k: mean(v) for k, v in scores.items() if isinstance(v, list)}
         agg_scores["final_score"] = mean(agg_scores.values())
     refusal_ratio = refusal_count / len(outputs)
 

@@ -31,18 +31,40 @@ class JudgeSingleOutput(DataClassJsonMixin):
 
 @dataclass
 class CRMJudgeSingleOutput(DataClassJsonMixin):
-    is_refusal_explanation: str
+    # is_refusal_explanation: str
+    # is_refusal: bool
+    # overall_effectiveness_explanation: str
+    # overall_effectiveness_score: int
+    # persona_alignment_explanation: str
+    # persona_alignment_score: int
+    # content_policy_compliance_explanation: str
+    # content_policy_compliance_score: int
+    # language_and_tone_explanation: str
+    # language_and_tone_score: int
+    # fan_engagement_explanation: str
+    # fan_engagement_score: int
+    is_refusal_explanation: dict
     is_refusal: bool
-    overall_effectiveness_explanation: str
-    overall_effectiveness_score: int
-    persona_alignment_explanation: str
-    persona_alignment_score: int
-    content_policy_compliance_explanation: str
-    content_policy_compliance_score: int
-    language_and_tone_explanation: str
-    language_and_tone_score: int
-    fan_engagement_explanation: str
-    fan_engagement_score: int
+    teasing_level_explanation: dict
+    teasing_level_score: int
+    casual_atmosphere_explanation: dict
+    casual_atmosphere_score: int
+    word_choice_explanation: dict
+    word_choice_score: int
+    emoji_usage_explanation: dict
+    emoji_usage_score: int
+    natural_language_flow_explanation: dict
+    natural_language_flow_score: int
+    emotional_variation_explanation: dict
+    emotional_variation_score: int
+    proactivity_explanation: dict
+    proactivity_score: int
+    factual_alignment_explanation: dict
+    factual_alignment_score: int
+    tone_alignment_explanation: dict
+    tone_alignment_score: int
+    content_policy_alignment_explanation: dict
+    content_policy_alignment_score: int
 
 @dataclass
 class JudgeOutput(DataClassJsonMixin):
@@ -65,12 +87,34 @@ class CRMJudgeOutput(DataClassJsonMixin):
     def get_aggregated(self) -> Dict[str, List[int]]:
         fixed_scores = defaultdict(list)
         for s in self.scores:
-            fixed_scores["overall_effectiveness"].append(s.overall_effectiveness_score)
-            fixed_scores["persona_alignment"].append(s.persona_alignment_score)
-            fixed_scores["content_policy_compliance"].append(s.content_policy_compliance_score)
-            fixed_scores["language_and_tone"].append(s.language_and_tone_score)
-            fixed_scores["fan_engagement"].append(s.fan_engagement_score)
+            # fixed_scores["is_refusal"].append(int(s.is_refusal))
+            # fixed_scores["overall_effectiveness"].append(s.overall_effectiveness_score)
+            # fixed_scores["persona_alignment"].append(s.persona_alignment_score)
+            # fixed_scores["content_policy_compliance"].append(s.content_policy_compliance_score)
+            # fixed_scores["language_and_tone"].append(s.language_and_tone_score)
+            # fixed_scores["fan_engagement"].append(s.fan_engagement_score)
             fixed_scores["is_refusal"].append(int(s.is_refusal))
+            fixed_scores["is_refusal_explanation"] = s.is_refusal_explanation
+            fixed_scores["teasing_level"].append(s.teasing_level_score)
+            fixed_scores["teasing_level_explanation"] = s.teasing_level_explanation
+            fixed_scores["casual_atmosphere"].append(s.casual_atmosphere_score)
+            fixed_scores["casual_atmosphere_explanation"] = s.casual_atmosphere_explanation
+            fixed_scores["word_choice"].append(s.word_choice_score)
+            fixed_scores["word_choice_explanation"].append(s.word_choice_explanation)
+            fixed_scores["emoji_usage"].append(s.emoji_usage_score)
+            fixed_scores["emoji_usage_explanation"].append(s.emoji_usage_explanation)
+            fixed_scores["natural_language_flow"].append(s.natural_language_flow_score)
+            fixed_scores["natural_language_flow_explanation"].append(s.natural_language_flow_explanation)
+            fixed_scores["emotional_variation"].append(s.emotional_variation_score)
+            fixed_scores["emotional_variation_explanation"].append(s.emotional_variation_explanation)
+            fixed_scores["proactivity"].append(s.proactivity_score)
+            fixed_scores["proactivity_explanation"].append(s.proactivity_explanation)
+            fixed_scores["factual_alignment"].append(s.factual_alignment_score)
+            fixed_scores["factual_alignment_explanation"].append(s.factual_alignment_explanation)
+            fixed_scores["tone_alignment"].append(s.tone_alignment_score)
+            fixed_scores["tone_alignment_explanation"].append(s.tone_alignment_explanation)
+            fixed_scores["content_policy_alignment"].append(s.content_policy_alignment_score)
+            fixed_scores["content_policy_alignment_explanation"].append(s.content_policy_alignment_explanation)
         return fixed_scores
 
 
@@ -138,8 +182,9 @@ def run_judge_crm(
     output: Optional[CRMJudgeOutput] = None
     for _ in range(3):
         try:
-            print(prompt[0]["content"])
-            print(prompt[1]["content"])
+            print("======JUDGE======")
+            # print(prompt[0]["content"])
+            # print(prompt[1]["content"])
             result = generate(prompt, provider=provider, **kwargs)
             print(result)
             print()

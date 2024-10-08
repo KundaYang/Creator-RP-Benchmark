@@ -37,7 +37,9 @@ def run_player(
         try:
             print("======PLAYER======")
             for m in messages:
-                print(f'{m["role"]}: {m["content"]}')
+                if m["role"] == "system":
+                    continue
+                print(f'{m["role"]}:\n{m["content"]}')
                 print()
             print()
             output = generate(
@@ -77,7 +79,9 @@ def run_interrogator(
         try:
             print("======INTERROGATOR======")
             for m in messages:
-                print(f'{m["role"]}: {m["content"]}')
+                if m["role"] == "system":
+                    continue
+                print(f'{m["role"]}:\n{m["content"]}')
                 print()
             print()
             output = generate(
